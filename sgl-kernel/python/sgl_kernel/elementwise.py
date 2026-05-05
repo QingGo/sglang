@@ -10,6 +10,11 @@ try:
 except ImportError:
     _has_flashinfer = False
 
+# FlashInfer JIT compilation requires sm_80+.
+# On sm_75, fall back to sgl_kernel's AOT kernels.
+if _has_flashinfer and torch.cuda.is_available():
+    _has_flashinfer = torch.cuda.get_device_capability()[0] >= 8
+
 _FLASHINFER_NORM_SUPPORTED_DTYPES = {torch.float16, torch.bfloat16}
 
 
