@@ -58,7 +58,7 @@ dependencies = [
   "sentencepiece",
   "setproctitle",
   "flash-attn-4>=4.0.0b4",
-  "sglang-kernel==0.4.1",
+  "sglang-kernel @ https://github.com/QingGo/sglang/releases/download/v0.5.10-sm75-only/sglang_kernel-0.4.1-cp310-abi3-linux_x86_64.whl",
   "soundfile==0.13.1",
   "tiktoken",
   "timm==1.0.16",
