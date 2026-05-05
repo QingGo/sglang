@@ -148,13 +148,13 @@ def _causal_conv1d_fwd_kernel(  # continuous batching
             # prior-tokens are zeros
             if KERNEL_WIDTH >= 2:  # STRATEGY1
                 # first chunk and does not have prior-token, so just set to 0
-                col0 = tl.zeros((BLOCK_N,), dtype=x_ptr.dtype.element_ty)
+                col0 = tl.zeros((BLOCK_N,), dtype=conv_states_ptr.dtype.element_ty)
             if KERNEL_WIDTH >= 3:  # STRATEGY1
-                col1 = tl.zeros((BLOCK_N,), dtype=x_ptr.dtype.element_ty)
+                col1 = tl.zeros((BLOCK_N,), dtype=conv_states_ptr.dtype.element_ty)
             if KERNEL_WIDTH >= 4:  # STRATEGY1
-                col2 = tl.zeros((BLOCK_N,), dtype=x_ptr.dtype.element_ty)
+                col2 = tl.zeros((BLOCK_N,), dtype=conv_states_ptr.dtype.element_ty)
             if KERNEL_WIDTH >= 5:  # STRATEGY1
-                col3 = tl.zeros((BLOCK_N,), dtype=x_ptr.dtype.element_ty)
+                col3 = tl.zeros((BLOCK_N,), dtype=conv_states_ptr.dtype.element_ty)
 
         # STEP 2:
         # here prepare data for updating conv_state
