@@ -73,6 +73,11 @@ def causal_conv1d_fn(
     # non-contiguous and seq_lens_cpu is already pre-computed by caller.
     # The Triton kernel accepts arbitrary strides, avoiding a .contiguous()
     # copy that can cost >0.6 ms/layer on large prefill batches.
+    # Ensure conv_states matches x dtype (e.g., fp16 on sm_75).
+    # Must be done before both AOT and Triton paths.
+    if conv_states is not None and conv_states.dtype != x.dtype:
+        conv_states = conv_states.to(x.dtype)
+
     use_triton = not _HAS_SGL_KERNEL or (x.stride(-1) != 1 and "seq_lens_cpu" in kwargs)
     if use_triton:
         if "seq_lens_cpu" not in kwargs:
@@ -94,11 +99,6 @@ def causal_conv1d_fn(
     if x.stride(-1) != 1:
         x = x.contiguous()
     bias = bias.contiguous() if bias is not None else None
-
-    # The kernel expects conv_states and x to have the same dtype.
-    # On fp16-only GPUs (sm_75), the mamba cache may be allocated in float32.
-    if conv_states is not None and conv_states.dtype != x.dtype:
-        conv_states = conv_states.to(x.dtype)
 
     causal_conv1d_fwd(
         x,
