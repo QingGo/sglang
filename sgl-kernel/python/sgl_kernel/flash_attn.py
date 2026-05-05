@@ -6,10 +6,11 @@ from sgl_kernel.debug_utils import maybe_wrap_debug_kernel
 
 try:
     from sgl_kernel import flash_ops
-except:
-    raise ImportError(
-        "Can not import FA3 in sgl_kernel. Please check your installation."
-    )
+
+    _has_flash_ops = True
+except ImportError:
+    _has_flash_ops = False
+    flash_ops = None  # FA3 not available (e.g., sm_75-only build)
 
 
 @lru_cache(maxsize=1)

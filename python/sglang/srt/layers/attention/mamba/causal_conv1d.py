@@ -95,6 +95,11 @@ def causal_conv1d_fn(
         x = x.contiguous()
     bias = bias.contiguous() if bias is not None else None
 
+    # The kernel expects conv_states and x to have the same dtype.
+    # On fp16-only GPUs (sm_75), the mamba cache may be allocated in float32.
+    if conv_states is not None and conv_states.dtype != x.dtype:
+        conv_states = conv_states.to(x.dtype)
+
     causal_conv1d_fwd(
         x,
         weight,
@@ -161,6 +166,8 @@ def causal_conv1d_update(
     unsqueeze = x.dim() == 2
     if unsqueeze:
         x = x.unsqueeze(-1)
+    if conv_state is not None and conv_state.dtype != x.dtype:
+        conv_state = conv_state.to(x.dtype)
     causal_conv1d_update_kernel(
         x,
         conv_state,
